@@ -14,9 +14,17 @@ import requests
 
 REPOSITORY_PATH="https://github.com/hse-aml/natural-language-processing"
 
+http_proxy  = "http://webproxy.wlb2.nam.nsroot.net:8092/"
+https_proxy = "http://webproxy.wlb2.nam.nsroot.net:8092/"
+ftp_proxy   = "http://webproxy.wlb2.nam.nsroot.net:8092/"
+proxyDict = { 
+              "http"  : http_proxy, 
+              "https" : https_proxy,
+              "ftp"   : ftp_proxy
+            }
 
 def download_file(url, file_path):
-    r = requests.get(url, stream=True)
+    r = requests.get(url, stream=True, proxies=proxyDict)
     total_size = int(r.headers.get('content-length'))
     try:
         with open(file_path, 'wb', buffering=16*1024*1024) as f:
@@ -44,6 +52,7 @@ def download_file(url, file_path):
 def download_from_github(version, fn, target_dir, force=False):
     url = REPOSITORY_PATH + "/releases/download/{0}/{1}".format(version, fn)
     file_path = os.path.join(target_dir, fn)
+    print(file_path)
     if os.path.exists(file_path) and not force:
         print("File {} is already downloaded.".format(file_path))
         return
